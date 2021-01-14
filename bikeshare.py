@@ -247,6 +247,11 @@ def user_stats(df):
 
 
 def main():
+
+    # Data frame display settings
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_colwidth', None)
+
     while True:
         city, month, day = get_filters()
         df = load_data(city, month, day)
@@ -256,8 +261,20 @@ def main():
         trip_duration_stats(df)
         user_stats(df)
 
-        restart = input('\nWould you like to restart? Enter yes or no.\n')
-        if restart.lower() != 'yes':
+        df = df.fillna('N/A')
+
+        # Prompt to print 5 rows at a time
+        for counter in np.arange(0,df.shape[0],5):
+            more = 'more '*bool(counter>0)
+            raw = input('\nWould you like to see five ' + more
+                            + 'lines of raw input?  Enter [y]es or [n]o: ')
+            if not raw.lower().startswith('y'):
+                break
+            print(df.iloc[counter:min(counter+5,df.shape[0]),:])
+
+        # Prompt to restart
+        restart = input('\nWould you like to restart? Enter [y]es or [n]o: ')
+        if not restart.lower().startswith('y'):
             break
 
 
